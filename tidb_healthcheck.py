@@ -10,87 +10,12 @@ import subprocess
 import re
 import argparse
 
-################################################################################################
-# TiDB Grafana Panel Mapping
-#overview eDbRZpnWk
-#76 Services Port Status
-#27 Storage capacity
-#28 Current storage size
-#30 Number of Regions
-#65 Normal stores
-#18 Abnormal stores
-#66 Region health
-#34 Duration
-#20 Leader
-#21 Region
-#68 Hot write Region's leader distribution
-#69 Hot read Region's leader distribution
-#2 Statement OPS
-
-#55 CPU Usage
-#58 Memory Available
-#79 Network Traffic
-#61 IO Util
-
-#pd Q6RuHYIWk
-#83 Store capacity
-#91 Store available
-#41 Store Region score
-#40 Store leader score
-#46 Scheduler is running
-#45 Schedule operator create
-#78 Schedule operator timeout
-#77 Schedule operator finish
-
-#TIDB 000000011
-#184 Uptime
-#8 Connection Count
-#111 Get Token Duration
-#191 Skip Binlog Count
-#156 Parse Duration
-#154 Compile Duration
-#77 PD TSO Wait Duration
-#78 PD TSO RPC Duration
-#53 KV Backoff OPS
-#11 TiClient Region Error OPS
-#32 Lock Resolve OPS
-
-
-#tikv RDVQiEzZz
-#61 Raft store CPU
-#79 Async apply CPU
-#64 Scheduler worker CPU
-#105 gRPC poll CPU
-#4287 Unified read pool CPU
-#109 Storage async write duration
-#3062 Request duration
-#2741 Critical error
-#1584 Server is busy
-#18 Server report failures
-#1718 Raftstore error
-#1719 Scheduler error
-
-#tiflash SVbh2xUWk
-#11 Request Duration
-#13 Request Handle Duration
-
-#TiFlash-Proxy-Details  kWxNAVnGz
-#1714 Region
-
-#SVbh2xUWk TiFlash-Summary
-#12 Error QPS
-
-#YiGL8hBZ1 tidb-test-ticdc
-#398 Changefeed checkpoint lag
-#468 Changefeed resolved ts lag
-
-################################################################################################
 # create parser
 parser = argparse.ArgumentParser(description='This tool is using for automation generate TiDB Health Check report。')
 # 添加参数
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.1')
 parser.add_argument('-c', '--cfg', type=str, help='set config file path', default ='tidb_healthcheck.cfg')
-#parser.add_argument('-t', '--template', type=str, help='set report template file path', default ='TiDB健康检查报告-template')
+# parser.add_argument('-t', '--template', type=str, help='set report template file path', default ='TiDB健康检查报告-template')
 args = parser.parse_args()
 if os.path.exists(args.cfg):
     config = configparser.ConfigParser()
@@ -108,11 +33,11 @@ GRAFANA_API_KEY = config.get('MONITOR', 'GRAFANA_API_KEY')
 # Define Image Dir
 OUTPUT_DIR = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 FROM_TIME = config.get('MONITOR', 'FROM_TIME')
-#TO_TIME = "now"
+# TO_TIME = "now"
 TO_TIME = config.get('MONITOR', 'TO_TIME')
 # IMG_WIDTH = 1000
 IMG_WIDTH = config.get('MONITOR', 'IMG_WIDTH')
-#IMG_HEIGHT = 500
+# IMG_HEIGHT = 500
 IMG_HEIGHT = config.get('MONITOR', 'IMG_HEIGHT')
 # ORGID = 1
 ORGID = config.get('MONITOR', 'ORGID')
@@ -190,10 +115,10 @@ COMMANDS = [
     {"cmd_name": "tiup_cluster_show_config", "cmd_text": f'''tiup cluster show-config {CLUSTER_NAME}'''},
     {"cmd_name": "tiup_cluster_display", "cmd_text": f'''tiup cluster display {CLUSTER_NAME}'''},
     {"cmd_name": "tiup_cluster_df", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo df -Th"'''},
-    #{"cmd_name": "tiup_cluster_eth_speed", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "ethtool bond0 |grep Speed"'''},
+    # {"cmd_name": "tiup_cluster_eth_speed", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "ethtool bond0 |grep Speed"'''},
     {"cmd_name": "tiup_cluster_eth_speed", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo ip link show | grep -Eo "^[0-9]+:.*:" | cut -d: -f2- | xargs -n1 ethtool || echo ..."'''},
-    #{"cmd_name": "tiup_cluster_os_ver", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo nkvers"'''},
-    #{"cmd_name": "tiup_cluster_os_ver", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo lsb_release -a"'''},
+    # {"cmd_name": "tiup_cluster_os_ver", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo nkvers"'''},
+    # {"cmd_name": "tiup_cluster_os_ver", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo lsb_release -a"'''},
     {"cmd_name": "tiup_cluster_os_ver", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /etc/os-release"'''},
     {"cmd_name": "tiup_cluster_kernel_param", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /etc/sysctl.conf |grep -v '#'"'''},
     {"cmd_name": "tiup_cluster_ulimit", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /etc/security/limits.conf  |grep -v '#'"'''},
@@ -206,10 +131,10 @@ COMMANDS = [
     {"cmd_name": "tiup_cluster_netbonding", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /proc/net/bonding/bond0|grep Bonding || echo ..."'''},
     {"cmd_name": "tiup_cluster_display_pump_drainer", "cmd_text": f'''tiup cluster display {CLUSTER_NAME} -R pump,drainer'''},
     {"cmd_name": "tiup_cluster_display_cdc", "cmd_text": f'''tiup cluster display {CLUSTER_NAME} -R cdc'''},
-    #{"cmd_name": "tiup_cluster_IO_scheduler", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /sys/block/*/queue/scheduler"'''},
+    # {"cmd_name": "tiup_cluster_IO_scheduler", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "sudo cat /sys/block/*/queue/scheduler"'''},
     {"cmd_name": "tiup_cluster_IO_scheduler", "cmd_text": f'''tiup cluster exec {CLUSTER_NAME} --command "for scheduler in /sys/block/*/queue/scheduler; do echo "$(dirname "$scheduler")"; cat "$scheduler"; done"'''},
-    #{"cmd_name": "tiup_cdc_cf_list", "cmd_text": f'''tiup cdc cli changefeed list'''},
-    #{"cmd_name": "mysql.user", "cmd_text": f'mysql -h{TIDB_SERVER_IP} -P{TIDB_SERVER_PORT} -u{TIDB_USER} -p{TIDB_USER_PWD} --skip-ssl -e "select * from mysql.user;"'},
+    # {"cmd_name": "tiup_cdc_cf_list", "cmd_text": f'''tiup cdc cli changefeed list'''},
+    # {"cmd_name": "mysql.user", "cmd_text": f'mysql -h{TIDB_SERVER_IP} -P{TIDB_SERVER_PORT} -u{TIDB_USER} -p{TIDB_USER_PWD} --skip-ssl -e "select * from mysql.user;"'},
     {"cmd_name": "stats_healthy", "cmd_text": f'mysql -h{TIDB_SERVER_IP} -P{TIDB_SERVER_PORT} -u{TIDB_USER} -p{TIDB_USER_PWD} -v -e "SHOW STATS_HEALTHY where Healthy<80;"'},
     {"cmd_name": "show_global_bindings", "cmd_text": f'mysql -h{TIDB_SERVER_IP} -P{TIDB_SERVER_PORT} -u{TIDB_USER} -p{TIDB_USER_PWD} -v -e "show global bindings;"'},
     {"cmd_name": "show_var_tidb_capture_plan_baselines", "cmd_text": f'''mysql -h{TIDB_SERVER_IP} -P{TIDB_SERVER_PORT} -u{TIDB_USER} -p{TIDB_USER_PWD} -e "show variables like 'tidb_capture_plan_baselines';"'''},
@@ -244,10 +169,10 @@ def download_img(DASHBOARD_ID,PANEL_ID,OUTPUT_FILE):
         with open(f"{OUTPUT_FILE}", "wb") as f:
             for chunk in response.iter_content(1024):
                 f.write(chunk)
-        #print(f"Image {OUTPUT_FILE} saved successfully")
+        # print(f"Image {OUTPUT_FILE} saved successfully")
         logging.info(f"Image {OUTPUT_FILE} saved successfully.")
     else:
-        #print(f"Error: {response.status_code}")
+        # print(f"Error: {response.status_code}")
         logging.error(f"Error: {response.status_code}")
 
 # Replace placeholder with image in the report
@@ -256,29 +181,16 @@ def replace_placeholder_with_image(doc, placeholder, image_path):
         if placeholder in paragraph.text:
             paragraph.text = paragraph.text.replace(placeholder, '')
             new_run = paragraph.add_run()
-            #new_run.add_picture(image_path, width=width, height=height)
             new_run.add_picture(image_path, width=Cm(25))
-            #logging.info(f"Image {image_path} written to document.")
-            #for run in paragraph.runs:
-            #    #logging.info(f'{run}')
-            #    if placeholder in run.text:
-            #        run.text = run.text.replace(placeholder, "")
-            #        #logging.info(f"Placeholder {placeholder} was removed.")
-            #break
 
 # Replace placeholder with query result in report table
 def replace_placeholder_in_table(doc, placeholder, cmd_text):
     try:
         result = subprocess.run(cmd_text, capture_output=True, text=True, check=True, shell=True, encoding='utf-8')
-        #print(result.stderr)
-        #print(result.)
-        #if error then
-
-        #
         if placeholder == "{tiup_cluster_check}":
             #  XML compatible
-            #command_output_tmp = re.sub(u"[\\x00-\\x08\\x0b\\x0e-\\x1f\\x7f]","",result.stdout)
-            #match = re.search('Cleanup check files', result.stdout)
+            # command_output_tmp = re.sub(u"[\\x00-\\x08\\x0b\\x0e-\\x1f\\x7f]","",result.stdout)
+            # match = re.search('Cleanup check files', result.stdout)
             results = result.stdout + result.stderr
             match = re.search('Node          Check         Result  Message', results)
             if match:
@@ -300,26 +212,21 @@ def replace_placeholder_in_table(doc, placeholder, cmd_text):
                         cell.text = cell.text.replace(placeholder, command_output)
                         logging.info(f"{placeholder} was replaced by result.")
     except subprocess.CalledProcessError as e:
-        #print(f"命令执行失败: {e}")
-        #command_output = str(e)
+        # command_output = str(e)
         print()
         logging.error(f'Command {placeholder} failed: {e}.')
 
 # Replace placeholder with keywords in report
 def replace_placeholder_in_doc(doc, placeholder, key_str):
     try:
-        #result = subprocess.run(cmd_text, capture_output=True, text=True, check=True, shell=True, encoding='utf-8')
-        #command_output = result.stdout
-        #print (command_output)
         for para in doc.paragraphs:
             #for run in paragraph.runs:
             if placeholder in para.text:
-                #print(f"{placeholder} replace {key_str}")
+                # print(f"{placeholder} replace {key_str}")
                 para.text = para.text.replace(placeholder, key_str)
-        #logging.info(f"KEYWORDS: {placeholder} was replaced.")
+        # logging.info(f"KEYWORDS: {placeholder} was replaced.")
     except subprocess.CalledProcessError as e:
-        #print(f"命令执行失败: {e}")
-        #command_output = str(e)
+        # command_output = str(e)
         logging.error(f'Command {placeholder} failed: {e}.')
 
 def main():
