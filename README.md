@@ -1,7 +1,7 @@
 # tidb_healthcheck
 This tool is using for collect TiDB cluster metrics and configuration data and generate HealthCheck report automatically.
 
-
+![示例图片](images/arch.png)
 
 ## Requirements
 - Grafana Image Render plugin or standalone Node.js application is required using for generate snapshot from Grafana;
