@@ -16,7 +16,7 @@ This tool is using for collect TiDB cluster metrics and configuration data and g
 - Mac OS X (x64)
 
 ### Dependencies
-python 3.7.9 is required if you need recompile the program
+python 3.7.9 is required if you need recompile the binary
 
 ### Run as binary in Linux
 Edit tidb_healthcheck.cfg to set connection and configuration parameters
